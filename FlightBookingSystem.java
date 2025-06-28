@@ -8,12 +8,14 @@ public class FlightBookingSystem {
         private String source;
         private String destination;
         private String time;
+        private Set<Integer> users;
 
         public Flight(String source, String destination, String time) {
             this.id = idInitializer++;
             this.source = source;
             this.destination = destination;
             this.time = time;
+            this.users = new HashSet();
         }
 
         public int getId() {
@@ -49,15 +51,18 @@ public class FlightBookingSystem {
     private List<Flight> flights;
     private List<User> users;
     private Map<Integer, Integer> bookings;
+    private Map<Integer, Set<Integer>> attendants;
 
     public FlightBookingSystem() {
         this.flights = new ArrayList<>();
         this.users = new ArrayList<>();
         this.bookings = new HashMap<>();
+        this.attendants = new HashMap<>();
     }
 
     public void addFlight(String source, String destination, String time) {
         Flight f = new Flight(source, destination, time);
+        this.attendants.put(f.id, new HashSet<>());
         flights.add(f);
     }
 
@@ -67,7 +72,8 @@ public class FlightBookingSystem {
     }
 
     public void bookFlight(int userId, int flightId) {
-        bookings.put(userId, flightId);
+        this.bookings.put(userId, flightId);
+        this.attendants.get(flightId).add(userId);
     }
 
     public void getFlight(int id) {
@@ -78,6 +84,13 @@ public class FlightBookingSystem {
             }
         }
         System.out.println("Flight not found.");
+    }
+
+    public void getAttendantsOf(int flightId){
+        System.out.println("All the attendants of flight" + flightId + " are : ");
+        for(int i : attendants.get(flightId)){
+            getUser(i);
+        }
     }
 
     public void getUser(int id) {
@@ -108,5 +121,7 @@ public class FlightBookingSystem {
         system.bookFlight(1, 1);
         system.getUser(1);
         system.getBooking(1);
+        system.getAttendantsOf(1);
+
     }
 }
